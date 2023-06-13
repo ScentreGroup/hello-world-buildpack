@@ -1,0 +1,33 @@
+[project]
+id = "io.example.spring-boot"
+name = "spring-boot-hello-world"
+version = "1.0.0"
+
+# Set environment variables
+[build]
+BP_JAVA_VERSION = "17"
+
+[[build.env]]
+#name = "JAVA_TOOL_OPTIONS"
+#value = "-Xmx=${JVM_HEAP_SIZE} -Xss=${JVM_HEAP_SIZE}"
+# Define the buildpacks
+[[build.buildpacks]]
+id = "paketo-buildpacks/bellsoft-liberica"
+version = "10.2.3"
+
+# gradle requires syft
+[[build.buildpacks]]
+id = "paketo-buildpacks/syft"
+version = "1.30.1"
+
+[[build.buildpacks]]
+id = "paketo-buildpacks/gradle"
+version = "7.2.2"
+
+[[build.buildpacks]]
+id = "paketo-buildpacks/executable-jar"
+version = "6.7.3"
+
+[[build.buildpacks]]
+id = "paketo-buildpacks/spring-boot"
+version = "5.25.1"

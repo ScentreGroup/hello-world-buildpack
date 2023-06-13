@@ -1,0 +1,31 @@
+env:
+  TIME_OUT: 300
+  STACK_NAME: ${BUILDKITE_PIPELINE_SLUG}
+  RELEASE_NAME: ${BUILDKITE_PIPELINE_SLUG}
+  NAMESPACE: hris
+  GCP_REGION: australia-southeast1
+  GCP_KUBE_CLUSTER: int-0
+  CHART_VERSION: 0.18.0
+  BUILDKITE_BUILD_NUMBER: ${BUILDKITE_BUILD_NUMBER}
+  BOOTSTRAP_TIME_OUT: '10m'
+  SCG_CONTAINER_REGISTRY_GROUP: hris
+  SCG_CONTAINER_REGISTRY: asia.gcr.io/scg-container-registry/${SCG_CONTAINER_REGISTRY_GROUP}
+
+steps:
+  - name: "Gitleaks scan"
+    agents:
+      queue: "linux-ops"
+    plugins:
+      - docker#v5.5.0:
+          image: asia.gcr.io/scg-container-registry/gitleaks:v0.2.0
+          propagate-uid-gid: true
+          environment:
+            - GITLEAKS_REDACT=true
+            - GITLEAKS_HISTORY=HEAD
+    # Remove this to fail build
+    soft_fail:
+      - exit_status: 1
+  - wait
+
+  - name: ":gradle: bootBuildImage"
+    command: ./gradlew bootBuildImage

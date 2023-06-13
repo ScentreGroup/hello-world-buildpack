@@ -1,0 +1,28 @@
+#!/bin/bash
+set -e
+
+declare -A branches_to_gcp_envs
+declare -A branches_to_environments
+
+branches_to_gcp_envs=(
+  [develop]=dev
+  [stg]=uat
+  [main]=prd
+  [release]=prd
+  [hotfix]=prd
+)
+
+branches_to_environments=(
+  [develop]=development
+  [stg]=staging
+  [main]=production
+  [release]=production
+  [hotfix]=production
+)
+
+branch_split=$(echo "${BUILDKITE_BRANCH%%/*}")
+gcp_env=${branches_to_gcp_envs[branch_split]}
+environment=${branches_to_environments[branch_split]}
+
+export GCP_ENV="${gcp_env:-dev}"
+export ENVIRONMENT="${environment:-development}"

@@ -2,11 +2,37 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.1.0'
 	id 'io.spring.dependency-management' version '1.1.0'
+	id 'com.google.cloud.tools.jib' version '3.3.2'
+	id 'org.graalvm.buildtools.native' version '0.9.20'
 }
 
 group = 'com.mark.sample'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 sourceCompatibility = '17'
+
+def buildNumber = project.findProperty('BUILDKITE_BUILD_NUMBER') ?: "${version}"
+
+// using google plugin to build and push OCI to GCR
+jib {
+	to {
+		image = 'asia.gcr.io/scg-container-registry/hris/hello-world'
+		tags = ["${buildNumber}"]
+	}
+}
+
+// using springboot plugin to build OCI, note: it does not have native support to push to GCR
+// so you have to write a task to push the image
+bootBuildImage {
+	imageName = "asia.gcr.io/scg-container-registry/hris/hello-world:${buildNumber}"
+	builder = 'paketobuildpacks/builder:tiny'
+	environment = ['BP_NATIVE_IMAGE': 'true', 'BP_JVM_VERSION': "${sourceCompatibility}"]
+}
+
+task pushImageToGCR(type: Exec) {
+	dependsOn 'bootBuildImage'
+	commandLine 'docker', 'push', "asia.gcr.io/scg-container-registry/hris/hello-world:${buildNumber}"
+}
+
 
 configurations {
 	compileOnly {
@@ -18,14 +44,39 @@ repositories {
 	mavenCentral()
 }
 
+// this tasks are building OCI without any plugins, just directly running pack commands.
+task configureDefaultBuilder(type: Exec) {
+	commandLine 'pack', 'config', 'default-builder', 'paketobuildpacks/builder:base'
+}
+task buildImage(type: Exec) {
+	commandLine 'pack', 'build', '--publish', "asia.gcr.io/scg-container-registry/hris/hello-world-aot:${buildNumber}", '--path', '.'//, '--buildpack', 'paketo-buildpacks/java'
+}
+buildImage.dependsOn configureDefaultBuilder
+
+task buildImageCutomDescriptor(type: Exec) {
+	commandLine 'pack', 'build', 'hello-world', '--path', '.'
+}
+buildImageCutomDescriptor.dependsOn configureDefaultBuilder
+
 dependencies {
-	implementation ('org.springframework.boot:spring-boot-starter-web') {
-		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
-	}
+	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-undertow'
+
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+// When you're building a native image with GraalVM and encounter
+// an issue with org.jboss.logmanager.LogManager,
+// it's often because the JBoss LogManager is not compatible with the
+// SubstrateVM (which is used by GraalVM to build native images)
+// out of the box
+configurations {
+	all {
+		exclude group: 'org.jboss'
+		exclude group: 'org.jboss.logmanager', module: 'jboss-logmanager'
+	}
 }
 
 tasks.named('test') {
