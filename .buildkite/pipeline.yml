@@ -25,7 +25,7 @@ steps:
     # Remove this to fail build
     soft_fail:
       - exit_status: 1
-  - wait
+  #- wait
 
   - name: ":gradle: bootBuildImage"
-    command: rm -rf /data/buildkite-agent/builds && docker-compose -f docker-compose.build.yml up --build
+    command: sudo rm -rf /data/buildkite-agent/builds && docker-compose -f docker-compose.build.yml up --build
