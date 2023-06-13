@@ -6,6 +6,7 @@ services:
       dockerfile: Dockerfile
     command: ./gradlew bootBuildImage
     working_dir: /usr/app
+    user: "997:1009"
     volumes:
       - ${PWD}:/usr/app/
       - /var/run/docker.sock:/var/run/docker.sock
