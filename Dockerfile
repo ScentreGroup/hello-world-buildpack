@@ -6,6 +6,7 @@ RUN microdnf install findutils sudo -y && \
     yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo && \
     microdnf install -y docker-ce-cli
 
+
 USER buildkite
 
 COPY . /usr/app
