@@ -9,7 +9,7 @@ RUN groupadd --gid 1009 buildkite && \
     sudo chmod 666 /var/run/docker.sock && \
     groupadd -g 993 docker && \
     usermod -aG docker buildkite
-
+USER buildkite
 COPY . /usr/app
 WORKDIR /usr/app
 CMD [""]
