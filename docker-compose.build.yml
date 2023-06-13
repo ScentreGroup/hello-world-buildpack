@@ -6,7 +6,8 @@ services:
       dockerfile: Dockerfile
     command: ./gradlew bootBuildImage
     working_dir: /usr/app
-    user: "997:1009"
+    user: root
+    network_mode: host
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock
     volumes:
