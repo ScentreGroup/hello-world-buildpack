@@ -10,7 +10,6 @@ services:
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock
       - BUILDKITE_BUILD_NUMBER
-      - ${HOME}/.google-credentials:/.google-credentials
     volumes:
       - ${PWD}:/usr/app/
       - /var/run/docker.sock:/var/run/docker.sock

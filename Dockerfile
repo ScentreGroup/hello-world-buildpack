@@ -6,7 +6,8 @@ RUN microdnf install findutils sudo -y && \
     yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo && \
     microdnf install -y docker-ce-cli
 
-RUN cat /.google-credentials | docker login -u _json_key --password-stdin https://asia.gcr.io
+COPY /.google-credentials /tmp/key.json
+RUN cat /tmp/key.json | docker login -u _json_key --password-stdin https://asia.gcr.io
 
 USER buildkite
 
