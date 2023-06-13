@@ -28,4 +28,8 @@ steps:
   - wait
 
   - name: ":gradle: bootBuildImage"
-    command: ./gradlew bootBuildImage
+    plugins:
+      docker-compose#v3.7.0:
+        propagate-uid-gid: true
+        run: bootBuildImage
+        config: docker-compose.build.yml
