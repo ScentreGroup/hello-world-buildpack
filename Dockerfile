@@ -10,6 +10,9 @@ RUN microdnf install findutils -y
 # Create group and user
 RUN groupadd --gid 1009 buildkite && useradd -m -s /bin/bash -u 997 -g buildkite buildkite
 
+# Add buildkite user to docker group (usually, the docker group is GID 993)
+RUN groupadd -g 993 docker && usermod -aG docker buildkite
+
 COPY . /usr/app
 WORKDIR /usr/app
 CMD [""]
