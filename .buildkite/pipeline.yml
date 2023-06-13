@@ -28,4 +28,4 @@ steps:
   - wait
 
   - name: ":gradle: bootBuildImage"
-    command: docker-compose -f docker-compose.build.yml --rm boot-build-image
+    command: docker-compose -f docker-compose.build.yml up --build
