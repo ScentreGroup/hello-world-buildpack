@@ -1,0 +1,10 @@
+version: "3.7"
+services:
+  gradle-build:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ./gradlew bootBuildImage
+    working_dir: /usr/app
+    volumes:
+      - ${PWD}:/usr/app/
