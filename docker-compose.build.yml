@@ -10,6 +10,7 @@ services:
     network_mode: host
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock
+      - BUILDKITE_BUILD_NUMBER
     volumes:
       - ${PWD}:/usr/app/
       - /var/run/docker.sock:/var/run/docker.sock
