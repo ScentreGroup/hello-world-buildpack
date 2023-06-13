@@ -7,7 +7,6 @@ services:
     command: ./gradlew bootBuildImage
     working_dir: /usr/app
     user: "997:1009"
-    network_mode: host
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock
       - BUILDKITE_BUILD_NUMBER
