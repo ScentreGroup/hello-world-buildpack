@@ -10,7 +10,7 @@ group = 'com.mark.sample'
 version = '0.0.1'
 sourceCompatibility = '17'
 
-def buildNumber = project.findProperty('BUILDKITE_BUILD_NUMBER') ?: "${version}"
+def buildNumber = "$System.env.BUILDKITE_BUILD_NUMBER" ?: "${version}"
 
 // using google plugin to build and push OCI to GCR
 jib {
