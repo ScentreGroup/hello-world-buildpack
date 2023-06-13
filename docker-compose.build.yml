@@ -8,3 +8,4 @@ services:
     working_dir: /usr/app
     volumes:
       - ${PWD}:/usr/app/
+      - /var/run/docker.sock:/var/run/docker.sock
