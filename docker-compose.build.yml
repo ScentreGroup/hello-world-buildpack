@@ -1,6 +1,6 @@
 version: "3.7"
 services:
-  bootBuildImage:
+  boot-build-image:
     build:
       context: .
       dockerfile: Dockerfile

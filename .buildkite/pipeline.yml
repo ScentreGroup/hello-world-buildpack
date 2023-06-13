@@ -31,5 +31,5 @@ steps:
     plugins:
       docker-compose#v3.7.0:
         propagate-uid-gid: true
-        run: bootBuildImage
+        run: boot-build-image
         config: docker-compose.build.yml
