@@ -28,4 +28,6 @@ steps:
   #- wait
 
   - name: ":gradle: bootBuildImage"
-    command: docker-compose -f docker-compose.build.yml up --build
+    commands:
+      - docker-compose -f docker-compose.build.yml up --build
+      - docker push "${SCG_CONTAINER_REGISTRY}/${pipelineSlug}:${buildNumber}"

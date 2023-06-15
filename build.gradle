@@ -11,6 +11,8 @@ version = '0.0.1'
 sourceCompatibility = '17'
 
 def buildNumber = System.getenv("BUILDKITE_BUILD_NUMBER") ?: "${version}"
+def containerRegistry = System.getenv("SCG_CONTAINER_REGISTRY") ?: "asia.gcr.io/scg-container-registry/hris"
+def pipelineSlug = System.getenv("BUILDKITE_PIPELINE_SLUG") ?: "hello-world-buildpack"
 
 // using google plugin to build and push OCI to GCR
 jib {
@@ -23,16 +25,14 @@ jib {
 // using springboot plugin to build OCI, note: it does not have native support to push to GCR
 // so you have to write a task to push the image
 bootBuildImage {
-	imageName = "asia.gcr.io/scg-container-registry/hris/hello-world:${buildNumber}"
+	imageName = "${containerRegistry}/${pipelineSlug}:${buildNumber}"
 	builder = 'paketobuildpacks/builder:tiny'
 	environment = ['BP_NATIVE_IMAGE': 'true', 'BP_JVM_VERSION': "${sourceCompatibility}"]
 }
 
 task pushImageToGCR(type: Exec) {
-	dependsOn 'bootBuildImage'
-	commandLine 'docker', 'push', "asia.gcr.io/scg-container-registry/hris/hello-world:${buildNumber}"
+	commandLine 'docker', 'push', "${containerRegistry}/${pipelineSlug}:${buildNumber}"
 }
-
 
 configurations {
 	compileOnly {
